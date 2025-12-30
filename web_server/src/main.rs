@@ -1,3 +1,5 @@
+use actix_cors::Cors;
+use actix_files as fs;
 use actix_web::{self, App, HttpResponse, HttpServer, Responder, get, web};
 use dotenvy::dotenv;
 use utoipa::OpenApi;
@@ -95,15 +97,23 @@ async fn main() -> std::io::Result<()> {
     let config = Config::from_env().expect("Failed to load config");
 
     HttpServer::new(move || {
+        let cors = Cors::permissive();
+
         App::new()
+            .wrap(cors)
+            .wrap(actix_web::middleware::Logger::default())
             .app_data(web::Data::new(DuckDuckGo::new()))
             .app_data(web::Data::new(BraveSearchEngine::new(&config)))
-            .wrap(actix_web::middleware::Logger::default())
             .service(
                 SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()),
             )
             .service(hello)
             .service(search)
+            .service(
+                fs::Files::new("/", "./frontend")
+                    .index_file("index.html")
+                    .show_files_listing(),
+            )
     })
     .bind(("127.0.0.1", 8080))?
     .run()
