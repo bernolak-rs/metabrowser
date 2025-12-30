@@ -1,7 +1,10 @@
 use actix_web::{self, App, HttpResponse, HttpServer, Responder, get, web};
+use dotenvy::dotenv;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
+use web_library::browsers::BraveSearchEngine;
+use web_library::browsers::Config;
 use web_library::{SearchEngine, SearchResult, browsers::DuckDuckGo};
 
 #[derive(serde::Serialize, utoipa::ToSchema)]
@@ -53,26 +56,48 @@ async fn hello() -> impl Responder {
     )
 )]
 #[get("/search/{query}")]
-async fn search(ddg: web::Data<DuckDuckGo>, query: web::Path<String>) -> impl Responder {
-    match ddg.get_ref().search(&query).await {
-        Ok(results) => {
-            let dto: Vec<SearchResultDto> = results.into_iter().map(Into::into).collect();
+async fn search(
+    ddg: web::Data<DuckDuckGo>,
+    brave: web::Data<BraveSearchEngine>,
+    query: web::Path<String>,
+) -> impl Responder {
+    let query_str = query.into_inner();
 
-            HttpResponse::Ok().json(dto)
-        }
-        Err(e) => HttpResponse::InternalServerError().body(e.to_string()),
+    // Run both searches in parallel
+    let ddg_fut = ddg.get_ref().search(&query_str);
+    let brave_fut = brave.get_ref().search(&query_str);
+
+    let (ddg_res, brave_res) = tokio::join!(ddg_fut, brave_fut);
+
+    let mut results = Vec::new();
+
+    if let Ok(ddg_results) = ddg_res {
+        results.extend(ddg_results);
     }
+
+    if let Ok(brave_results) = brave_res {
+        results.extend(brave_results);
+    }
+
+    // Map to DTOs
+    let dto: Vec<SearchResultDto> = results.into_iter().map(Into::into).collect();
+
+    HttpResponse::Ok().json(dto)
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init();
+    dotenv().ok();
 
     let openapi = ApiDoc::openapi();
+
+    let config = Config::from_env().expect("Failed to load config");
 
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(DuckDuckGo::new()))
+            .app_data(web::Data::new(BraveSearchEngine::new(&config)))
             .wrap(actix_web::middleware::Logger::default())
             .service(
                 SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()),

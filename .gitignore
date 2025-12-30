@@ -1,5 +1,14 @@
 /**/target 
 **/.idea
+**/.vscode
+debug/
+release/
 
 *.pdf
+
 **/.envtarget
+.env
+.env.*
+!.env.example
+
+*.log
