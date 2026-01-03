@@ -5,8 +5,10 @@ use dotenvy::dotenv;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
+use web_library::Aggregator;
 use web_library::browsers::BraveSearchEngine;
 use web_library::browsers::Config;
+use web_library::browsers::WikipediaClient;
 use web_library::{SearchEngine, SearchResult, browsers::DuckDuckGo};
 
 #[derive(serde::Serialize, utoipa::ToSchema)]
@@ -19,6 +21,7 @@ struct SearchResultDto {
     title: String,
     url: String,
     snippet: String,
+    source: String,
 }
 
 impl From<SearchResult> for SearchResultDto {
@@ -27,6 +30,7 @@ impl From<SearchResult> for SearchResultDto {
             title: value.title,
             url: value.url,
             snippet: value.snippet,
+            source: value.source,
         }
     }
 }
@@ -58,30 +62,11 @@ async fn hello() -> impl Responder {
     )
 )]
 #[get("/search/{query}")]
-async fn search(
-    ddg: web::Data<DuckDuckGo>,
-    brave: web::Data<BraveSearchEngine>,
-    query: web::Path<String>,
-) -> impl Responder {
+async fn search(aggregator: web::Data<Aggregator>, query: web::Path<String>) -> impl Responder {
     let query_str = query.into_inner();
 
-    // Run both searches in parallel
-    let ddg_fut = ddg.get_ref().search(&query_str);
-    let brave_fut = brave.get_ref().search(&query_str);
+    let results = aggregator.search(&query_str).await;
 
-    let (ddg_res, brave_res) = tokio::join!(ddg_fut, brave_fut);
-
-    let mut results = Vec::new();
-
-    if let Ok(ddg_results) = ddg_res {
-        results.extend(ddg_results);
-    }
-
-    if let Ok(brave_results) = brave_res {
-        results.extend(brave_results);
-    }
-
-    // Map to DTOs
     let dto: Vec<SearchResultDto> = results.into_iter().map(Into::into).collect();
 
     HttpResponse::Ok().json(dto)
@@ -96,14 +81,16 @@ async fn main() -> std::io::Result<()> {
 
     let config = Config::from_env().expect("Failed to load config");
 
-    HttpServer::new(move || {
-        let cors = Cors::permissive();
+    let ddg: Box<dyn SearchEngine + Send + Sync> = Box::new(DuckDuckGo::new());
+    let brave: Box<dyn SearchEngine + Send + Sync> = Box::new(BraveSearchEngine::new(&config));
+    let wiki: Box<dyn SearchEngine + Send + Sync> = Box::new(WikipediaClient::new());
+    let aggregator = web::Data::new(Aggregator::new(vec![ddg, wiki]));
 
+    HttpServer::new(move || {
         App::new()
-            .wrap(cors)
+            .wrap(Cors::permissive())
             .wrap(actix_web::middleware::Logger::default())
-            .app_data(web::Data::new(DuckDuckGo::new()))
-            .app_data(web::Data::new(BraveSearchEngine::new(&config)))
+            .app_data(aggregator.clone())
             .service(
                 SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()),
             )

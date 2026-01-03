@@ -6,7 +6,6 @@ use serde::Deserialize;
 use crate::SearchResult;
 use crate::browsers::Config;
 use crate::browsers::SearchEngine;
-use crate::browsers::config;
 
 #[derive(Debug, Deserialize)]
 struct BraveResponse {
