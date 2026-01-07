@@ -91,3 +91,78 @@ searchInput.addEventListener('keypress', (e) => {
         searchBtn.click();
     }
 });
+
+async function fetchHistory() {
+    const list = document.getElementById('historyList');
+    if (!list) return;
+
+    try {
+        const response = await fetch('/history');
+        if (response.status === 401) {
+            list.innerHTML = '<li class="list-group-item py-4 text-center">Please login to view history.</li>';
+            return;
+        }
+        const data = await response.json();
+        list.innerHTML = data.map(h => `
+            <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                <div>
+                    <a href="results.html?q=${encodeURIComponent(h.query_text)}" class="text-decoration-none fw-bold text-dark">
+                        ${h.query_text}
+                    </a>
+                </div>
+                <small class="text-muted">${h.created_at}</small>
+            </li>
+        `).join('');
+    } catch (err) {
+        list.innerHTML = `<li class="list-group-item text-danger">Error: ${err.message}</li>`;
+    }
+}
+
+async function handleLogin(username, password) {
+    const response = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    });
+    
+    if (response.ok) {
+        window.location.reload();
+    } else {
+        alert("Login failed!");
+    }
+}
+
+async function handleLogout() {
+    await fetch('/logout', { method: 'POST' });
+    window.location.href = 'index.html';
+}
+
+async function updateAuthUI() {
+    const userNav = document.getElementById('userNav');
+    if (!userNav) return;
+
+    try {
+        const res = await fetch('/history');
+        if (res.ok) {
+            userNav.innerHTML = `
+                <div class="dropdown">
+                    <button class="btn btn-light dropdown-toggle rounded-pill shadow-sm" data-bs-toggle="dropdown">
+                        User Account
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                        <li><a class="dropdown-item" href="history.html">Search History</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><button class="dropdown-item text-danger" onclick="logout()">Logout</button></li>
+                    </ul>
+                </div>
+            `;
+        }
+    } catch (e) { /* Keep empty (not logged in)  */ }
+}
+
+async function logout() {
+    await fetch('/logout', { method: 'POST' });
+    window.location.href = 'index.html';
+}
+
+document.addEventListener('DOMContentLoaded', updateAuthUI);

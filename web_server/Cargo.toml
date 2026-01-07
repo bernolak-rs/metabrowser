@@ -4,7 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-actix-web = { version = "4.12.1", features = ["openssl"] }
+actix-web = { version = "4.12.1", features = ["openssl", "macros"] }
+actix-session = { version = "0.11.0", features = ["cookie-session"] }
 oauth2 = "5.0.0"
 openssl = "0.10.75"
 jsonwebtokens-cognito = "0.1.1"
@@ -13,8 +14,10 @@ utoipa-swagger-ui = { version = "9.0.2", features=["actix-web"] }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.145"
 env_logger = "0.11.8"
+log = "0.4.29"
 web_library = { path = "../web_library" }
 dotenvy = "0.15.7"
 tokio = "1.47.2"
 actix-cors = "0.7.1"
 actix-files = "0.6.9"
+actix-identity = "0.9.0"

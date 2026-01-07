@@ -68,7 +68,7 @@ impl SearchEngine for BraveSearchEngine {
                 title: item.title,
                 url: item.url,
                 snippet: item.description.unwrap_or_default(),
-                score: 1.0,
+                score: 4.0,
                 source: self.name().into(),
             })
             .collect();
