@@ -1,8 +1,8 @@
 use actix_web::{self, HttpResponse, Responder, get, post, web};
 
 use web_library::Aggregator;
-use web_library::db;
 use web_library::SearchResult;
+use web_library::db;
 
 use actix_session::Session;
 use serde::{Deserialize, Serialize};
@@ -74,6 +74,8 @@ async fn search(
 ) -> impl Responder {
     let query_str = query.into_inner();
 
+    println!("DEBUG: Request received for query: '{}'", query_str);
+
     let user_id: i32 = session.get::<i32>("user_id").unwrap_or(None).unwrap_or(0);
 
     if user_id != 0 {
@@ -88,6 +90,11 @@ async fn search(
     }
 
     let results = aggregator.search(&query_str).await;
+    println!(
+        "Debug: Found {} results for query '{}'",
+        results.len(),
+        query_str
+    );
     let dto: Vec<SearchResultDto> = results.into_iter().map(Into::into).collect();
 
     HttpResponse::Ok().json(dto)
@@ -200,4 +207,3 @@ async fn get_user_history(
         _ => HttpResponse::InternalServerError().body("Failed to load history"),
     }
 }
-
