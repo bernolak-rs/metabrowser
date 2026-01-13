@@ -1,14 +1,18 @@
-use diesel::prelude::*;
-use crate::db::schema::search_history;
 use crate::db::models::NewSearchEntry;
-use argon2::{
-    password_hash::{rand_core::OsRng, PasswordHasher, PasswordVerifier, SaltString, PasswordHash},
-    Argon2,
-};
 use crate::db::models::NewUser;
+use crate::db::schema::search_history;
 use crate::db::schema::users;
+use argon2::{
+    Argon2,
+    password_hash::{PasswordHash, PasswordHasher, PasswordVerifier, SaltString, rand_core::OsRng},
+};
+use diesel::prelude::*;
 
-pub fn register_user(conn: &mut PgConnection, username: &str, password_raw: &str) -> QueryResult<usize> {
+pub fn register_user(
+    conn: &mut PgConnection,
+    username: &str,
+    password_raw: &str,
+) -> QueryResult<usize> {
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
 
@@ -27,18 +31,25 @@ pub fn register_user(conn: &mut PgConnection, username: &str, password_raw: &str
         .execute(conn)
 }
 
-pub fn login_user(conn: &mut PgConnection, username: &str, password_raw: &str) -> Result<i32, String> {
+pub fn login_user(
+    conn: &mut PgConnection,
+    targer_username: &str,
+    password_raw: &str,
+) -> Result<i32, String> {
     use crate::db::schema::users::dsl::*;
 
     let user = users
-        .filter(username.eq(username))
+        .filter(username.eq(targer_username))
         .first::<crate::db::models::User>(conn)
         .map_err(|_| "User not found".to_string())?;
 
-    let parsed_hash = PasswordHash::new(&user.password_hash)
-        .map_err(|_| "Invalid hash format".to_string())?;
+    let parsed_hash =
+        PasswordHash::new(&user.password_hash).map_err(|_| "Invalid hash format".to_string())?;
 
-    if Argon2::default().verify_password(password_raw.as_bytes(), &parsed_hash).is_ok() {
+    if Argon2::default()
+        .verify_password(password_raw.as_bytes(), &parsed_hash)
+        .is_ok()
+    {
         Ok(user.id)
     } else {
         Err("Invalid password".to_string())
@@ -56,9 +67,12 @@ pub fn save_search(conn: &mut PgConnection, user_id: i32, query: &str) -> QueryR
         .execute(conn)
 }
 
-pub fn get_history(conn: &mut PgConnection, uid: i32) -> QueryResult<Vec<crate::db::models::SearchHistory>> {
+pub fn get_history(
+    conn: &mut PgConnection,
+    uid: i32,
+) -> QueryResult<Vec<crate::db::models::SearchHistory>> {
     use crate::db::schema::search_history::dsl::*;
-    
+
     search_history
         .filter(user_id.eq(uid))
         .order(created_at.desc())
