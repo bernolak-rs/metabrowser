@@ -34,39 +34,5 @@
         </div>
     </div>
     <script src="script.js"></script>
-    <script>
-        let isLogin = true;
-        const authTitle = document.getElementById('authTitle');
-        const toggleBtn = document.getElementById('toggleAuth');
-        const form = document.getElementById('authForm');
-
-        toggleBtn.onclick = (e) => {
-            e.preventDefault();
-            isLogin = !isLogin;
-            authTitle.innerText = isLogin ? 'Login' : 'Register';
-            toggleBtn.innerText = isLogin ? "Don't have an account? Register" : "Already have an account? Login";
-        };
-
-        form.onsubmit = async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const endpoint = isLogin ? '/login' : '/register';
-
-            const res = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-
-            if (res.ok) {
-                alert(isLogin ? "Logged in!" : "Registered! Now please login.");
-                if (isLogin) window.location.href = 'index.html';
-                else window.location.reload();
-            } else {
-                alert("Action failed. Username might be taken or credentials invalid.");
-            }
-        };
-    </script>
 </body>
 </html>

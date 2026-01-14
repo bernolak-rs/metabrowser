@@ -15,9 +15,9 @@ pub struct SimpleResponse {
 
 #[derive(Serialize, Deserialize, ToSchema)]
 pub struct AuthRequest {
-    #[schema(example = "adam_dev")]
+    #[schema(example = "adam_test")]
     pub username: String,
-    #[schema(example = "secure_password123")]
+    #[schema(example = "password123")]
     pub password: String,
 }
 

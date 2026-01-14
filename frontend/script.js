@@ -1,11 +1,11 @@
-const getEl = (id) => document.getElementById(id);
+const getElement = (id) => document.getElementById(id);
 
 document.addEventListener('DOMContentLoaded', () => {
     updateAuthUI();
 
-    const searchBtn = getEl('searchBtn');
-    const searchInput = getEl('searchInput');
-    const resultsList = getEl('resultsList');
+    const searchBtn = getElement('searchBtn');
+    const searchInput = getElement('searchInput');
+    const resultsList = getElement('resultsList');
 
     if (searchBtn && searchInput) {
         searchBtn.addEventListener('click', () => {
@@ -29,14 +29,61 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    if (getEl('historyList')) {
+    if (getElement('historyList')) {
         fetchHistory();
+    }
+
+    const authForm = getElement('authForm');
+    const toggleBtn = getElement('toggleAuth');
+    const authTitle = getElement('authTitle');
+
+    if (authForm) {
+        let isLogin = true;
+
+        if (toggleBtn) {
+            toggleBtn.onclick = (e) => {
+                e.preventDefault();
+                isLogin = !isLogin;
+                authTitle.innerText = isLogin ? 'Login' : 'Login';
+                toggleBtn.innerText = isLogin ? "Don't have and account? Register" : 'Already have an account? Login';
+            }
+        }
+
+        authForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const username = getElement('username').value;
+            const password = getElement('password').value;
+            const endpoint = isLogin ? 'login' : 'register';
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                if (response.ok) {
+                    if (isLogin) {
+                        window.location.href = 'index.html';
+                    } else {
+                        alert("Registered successfully! You can now login.");
+                        isLogin = false;
+                        authTitle.innerText = 'Login';
+                        toggleBtn.innerText = "Don't have and account? Register";
+                        authForm.reset();
+                    }
+                } else
+                    alert("Login failed. Username might be taken.");
+            } catch (error) {
+                alert("Login failed. Please try again later.");
+            }
+        };
     }
 });
 
 async function performSearch(query) {
-    const wikiHero = getEl('wikiHero');
-    const resultsList = getEl('resultsList');
+    const wikiHero = getElement('wikiHero');
+    const resultsList = getElement('resultsList');
 
     if (!resultsList || !wikiHero) {
         return;
@@ -55,8 +102,8 @@ async function performSearch(query) {
 }
 
 function renderResults(results) {
-    const wikiHero = getEl('wikiHero');
-    const resultsList = getEl('resultsList');
+    const wikiHero = getElement('wikiHero');
+    const resultsList = getElement('resultsList');
 
     if (!resultsList || !wikiHero) return;
 
@@ -103,7 +150,7 @@ function renderResults(results) {
 }
 
 async function updateAuthUI() {
-    const userNav = getEl('userNav');
+    const userNav = getElement('userNav');
     if (!userNav) return;
 
     try {
@@ -130,7 +177,7 @@ async function logout() {
 }
 
 async function fetchHistory() {
-    const list = getEl('historyList');
+    const list = getElement('historyList');
     if (!list) return;
 
     try {
