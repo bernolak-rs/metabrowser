@@ -10,7 +10,6 @@ utoipa = { version = "5.4.0", features = ["actix_extras", "chrono"] }
 utoipa-swagger-ui = { version = "9.0.2", features=["actix-web"] }
 serde = { version = "1.0.228", features = ["derive"] }
 env_logger = "0.11.8"
-log = "0.4.29"
 web_library = { path = "../web_library" }
 dotenvy = "0.15.7"
 actix-cors = "0.7.1"
