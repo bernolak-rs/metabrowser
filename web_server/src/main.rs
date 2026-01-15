@@ -1,7 +1,25 @@
 //! # Main module of a web server
 //!
-//! This module initializes HTTP server (Acitx-web), sets up middleware (CORS, sessions, logger)
+//! This module initializes HTTP server (Actix-web), sets up middleware (CORS, sessions, logger)
 //! and registers handlers for API.
+//!
+//! This module also works as entry point for the application. We set up in "handlers.rs" our
+//! endpoints that can serve our frontend of choice.
+//!
+//! ### No Authentication Required
+//! * `/hello` - Health check to verify server availability.
+//! * `/register` - User account creation.
+//! * `/login` - Credential verification and session initialization.
+//! * `/search/{query}` - Anonymous search access.
+//!
+//! ### Require Authentication
+//! * `/logout` - Terminates the current user session.
+//! * `/history` - Retrieves the authenticated user's search logs.
+//! * `/search/{query}` - Search access with automatic history persistence in the DB.
+//!
+//! ## Documentation
+//! All endpoints are decorated with `utoipa` macros, which automatically generate
+//! the OpenAPI specification available via the Swagger UI at `/swagger-ui/`.
 
 use actix_cors::Cors;
 use actix_files as fs;

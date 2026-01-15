@@ -1,8 +1,7 @@
-//! # DuckDuckGo module
-//!
-//! Implements SearchEngine trait.
-//! This module provides querying for DDG engine.
-
+/// # DuckDuckGo module
+///
+/// Implements SearchEngine trait.
+/// This module provides querying for DDG engine.
 use reqwest::Client;
 use serde::Deserialize;
 

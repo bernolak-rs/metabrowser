@@ -1,9 +1,8 @@
-//! # Wikipedia module
-//!
-//! Implements SearchEngine trait.
-//! This module provides WikipediaClient that searches wikipedia encyclopedia.
-//! It provides summaries for searched topics.
-
+/// # Wikipedia module
+///
+/// Implements SearchEngine trait.
+/// This module provides WikipediaClient that searches wikipedia encyclopedia.
+/// It provides summaries for searched topics.
 use crate::SearchResult;
 use crate::browsers::SearchEngine;
 use async_trait::async_trait;

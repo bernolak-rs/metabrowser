@@ -2,7 +2,7 @@ use crate::browsers::SearchEngine;
 use crate::search_result::SearchResult;
 use futures::future::join_all;
 
-/// Contains search engines and searches web through them concurrently
+/// Contains search engines and searches web through them concurrently.
 pub struct Aggregator {
     engines: Vec<Box<dyn SearchEngine + Send + Sync>>,
 }
@@ -12,9 +12,9 @@ impl Aggregator {
         Self { engines }
     }
 
-    /// Concurrently searches web through all engines
-    /// Creates concurrent task for each engine and uses join_all to wait for them to finish
-    /// If an error occurs, it will be logged and rest of the correct results will be returned
+    /// Concurrently searches web through all engines.
+    /// Creates concurrent task for each engine and uses join_all to wait for them to finish.
+    /// If an error occurs, it will be logged and rest of the correct results will be returned.
     pub async fn search(&self, query: &str) -> Vec<SearchResult> {
         let tasks = self.engines.iter().map(|engine| async move {
             match engine.search(query).await {

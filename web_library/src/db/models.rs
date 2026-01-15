@@ -1,9 +1,11 @@
+use crate::db::schema::{search_history, users};
+use chrono::NaiveDateTime;
+/// Models created for database.
+/// Models are structs use for ORM.
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
-use crate::db::schema::{users, search_history};
-use chrono::NaiveDateTime;
 
-
+/// Table entry of individual users search history
 #[derive(Queryable, Selectable, Serialize, Debug)]
 #[diesel(table_name = users)]
 pub struct User {
@@ -12,6 +14,7 @@ pub struct User {
     pub password_hash: String,
 }
 
+/// Table entry representing new user
 #[derive(Insertable, Deserialize)]
 #[diesel(table_name = users)]
 pub struct NewUser {
@@ -19,7 +22,7 @@ pub struct NewUser {
     pub password_hash: String,
 }
 
-
+/// Table entry containing registered users of website
 #[derive(Queryable, Selectable, Associations, Serialize, Debug)]
 #[diesel(belongs_to(User))]
 #[diesel(table_name = search_history)]
@@ -30,6 +33,7 @@ pub struct SearchHistory {
     pub created_at: NaiveDateTime,
 }
 
+/// Table entry representing new search
 #[derive(Insertable, Deserialize)]
 #[diesel(table_name = search_history)]
 pub struct NewSearchEntry {

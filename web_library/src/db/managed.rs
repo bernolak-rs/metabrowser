@@ -8,6 +8,7 @@ use argon2::{
 };
 use diesel::prelude::*;
 
+/// Registers a new user with hashed password.
 pub fn register_user(
     conn: &mut PgConnection,
     username: &str,
@@ -31,6 +32,7 @@ pub fn register_user(
         .execute(conn)
 }
 
+/// Verifies users login information.
 pub fn login_user(
     conn: &mut PgConnection,
     targer_username: &str,
@@ -56,6 +58,7 @@ pub fn login_user(
     }
 }
 
+/// Saves search into database for history access.
 pub fn save_search(conn: &mut PgConnection, user_id: i32, query: &str) -> QueryResult<usize> {
     let new_entry = NewSearchEntry {
         user_id,
@@ -67,6 +70,7 @@ pub fn save_search(conn: &mut PgConnection, user_id: i32, query: &str) -> QueryR
         .execute(conn)
 }
 
+/// Fetches user searches and sorts them.
 pub fn get_history(
     conn: &mut PgConnection,
     uid: i32,
@@ -76,6 +80,6 @@ pub fn get_history(
     search_history
         .filter(user_id.eq(uid))
         .order(created_at.desc())
-        .limit(20)
+        .limit(50)
         .load::<crate::db::models::SearchHistory>(conn)
 }
