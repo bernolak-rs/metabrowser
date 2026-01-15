@@ -1,3 +1,8 @@
+//! # Main module of a web server
+//!
+//! This module initializes HTTP server (Acitx-web), sets up middleware (CORS, sessions, logger)
+//! and registers handlers for API.
+
 use actix_cors::Cors;
 use actix_files as fs;
 use actix_web::{self, App, HttpServer, web};
@@ -6,13 +11,16 @@ use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
 use web_library::Aggregator;
+use web_library::Config;
 use web_library::browsers::BraveSearchEngine;
-use web_library::browsers::Config;
 use web_library::browsers::WikipediaClient;
 use web_library::{SearchEngine, browsers::DuckDuckGo};
 
+/// Module handlers with API handlers
 mod handlers;
 
+/// Maps paths and schemas defined in mod handlers
+/// Generates OpenAPI doc
 #[derive(OpenApi)]
 #[openapi(
     paths(
@@ -32,6 +40,13 @@ mod handlers;
 )]
 struct ApiDoc;
 
+/// Entry point of application
+/// Initializes logging and loads '.env'
+/// Initializes OpenApi and config
+/// Creates a connection to PostgreSQL
+/// Initializes search engines and aggregator
+/// Initializes cookie key for session encryption
+/// Runs HTTP server on "127.0.0.1:8080"
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init();
@@ -48,7 +63,7 @@ async fn main() -> std::io::Result<()> {
     let ddg: Box<dyn SearchEngine + Send + Sync> = Box::new(DuckDuckGo::new());
     let brave: Box<dyn SearchEngine + Send + Sync> = Box::new(BraveSearchEngine::new(&config));
     let wiki: Box<dyn SearchEngine + Send + Sync> = Box::new(WikipediaClient::new());
-    let aggregator = web::Data::new(Aggregator::new(vec![ddg, wiki]));
+    let aggregator = web::Data::new(Aggregator::new(vec![ddg, brave, wiki]));
 
     let secret_key = actix_web::cookie::Key::generate();
 

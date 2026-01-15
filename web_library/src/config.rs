@@ -1,5 +1,6 @@
 use std::env;
 
+/// Configuration loaded from systems enviroment
 #[derive(Debug, Clone)]
 pub struct Config {
     pub brave_api_key: String,

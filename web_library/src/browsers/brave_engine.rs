@@ -1,10 +1,15 @@
+//! # Brave engine module
+//!
+//! Implements SearchEngine trait.
+//! This module provides querying for Brave engine.
+
 use anyhow::{Context, Result};
 use async_trait::async_trait;
 use reqwest::Client;
 use serde::Deserialize;
 
+use crate::Config;
 use crate::SearchResult;
-use crate::browsers::Config;
 use crate::browsers::SearchEngine;
 
 #[derive(Debug, Deserialize)]

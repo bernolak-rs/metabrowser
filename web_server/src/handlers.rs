@@ -8,11 +8,13 @@ use actix_session::Session;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
+/// Basic HTTP responses
 #[derive(serde::Serialize, utoipa::ToSchema)]
 pub struct SimpleResponse {
     status: u16,
 }
 
+/// Data required for authentification of a user
 #[derive(Serialize, Deserialize, ToSchema)]
 pub struct AuthRequest {
     #[schema(example = "adam_test")]
@@ -21,6 +23,7 @@ pub struct AuthRequest {
     pub password: String,
 }
 
+/// Search result that is being send to frontend
 #[derive(Serialize, ToSchema)]
 pub struct SearchResultDto {
     pub title: String,
@@ -29,6 +32,7 @@ pub struct SearchResultDto {
     pub source: String,
 }
 
+/// Converts SearchResult to DTO for API
 impl From<SearchResult> for SearchResultDto {
     fn from(value: SearchResult) -> Self {
         Self {
@@ -40,12 +44,15 @@ impl From<SearchResult> for SearchResultDto {
     }
 }
 
+/// History entry for user to see on frontend
 #[derive(Serialize, ToSchema)]
 pub struct HistoryEntryDto {
     pub query_text: String,
     pub created_at: String,
 }
 
+/// Endpoint for easy test of the web server
+/// Return 200 if everything runs correctly
 #[utoipa::path(
     responses(
         (status = 200, description = "API is alive", body = SimpleResponse),
@@ -56,6 +63,13 @@ async fn hello() -> impl Responder {
     HttpResponse::Ok().json(SimpleResponse { status: 200 })
 }
 
+/// Asynchronous search of the used browsers
+/// If user is logged in his search also gets stored in DB
+/// Parameters:
+/// - aggregator - aggregates multiple search engines for asynchronous search
+/// - pool - database pool
+/// - query - searched phrase
+/// - session - user session
 #[utoipa::path(
     params(
         ("query" = String, Path, description = "Search query")
@@ -100,6 +114,8 @@ async fn search(
     HttpResponse::Ok().json(dto)
 }
 
+/// Registers new user as an entry into a DB
+/// Returns responses whether user was correctly added
 #[utoipa::path(
     request_body = AuthRequest,
     responses(
@@ -127,6 +143,8 @@ async fn register(
     }
 }
 
+/// Logs user in
+/// If user logs correctly user_id gets inserted into session
 #[utoipa::path(
     request_body = AuthRequest,
     responses(
@@ -159,6 +177,7 @@ async fn login(
     }
 }
 
+/// Logs out user -> removes user_id from session
 #[utoipa::path(
     responses(
         (status = 200, description = "Logged out successfully"),
@@ -170,6 +189,7 @@ async fn logout(session: Session) -> impl Responder {
     HttpResponse::Ok().body("Logged out successfully")
 }
 
+/// Loads users history if user is logged in
 #[utoipa::path(
     responses(
         (status = 200, description = "List of past searches", body = [HistoryEntryDto]),
