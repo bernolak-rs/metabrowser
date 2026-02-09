@@ -14,3 +14,5 @@ log = "0.4.29"
 diesel = { version = "2.1", features = ["postgres", "chrono", "r2d2"] }
 chrono = { version = "0.4", features = ["serde"] }
 argon2 = "0.5.3"
+quick-xml = "0.39.0"
+serde-xml-rs = "0.8.2"

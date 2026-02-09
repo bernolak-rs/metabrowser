@@ -30,9 +30,8 @@ use utoipa_swagger_ui::SwaggerUi;
 
 use web_library::Aggregator;
 use web_library::Config;
-use web_library::browsers::BraveSearchEngine;
-use web_library::browsers::WikipediaClient;
-use web_library::{SearchEngine, browsers::DuckDuckGo};
+use web_library::SearchEngine;
+use web_library::browsers::{ArxivClient, BraveSearchEngine, DuckDuckGo, WikipediaClient};
 
 /// Module handlers with API handlers
 mod handlers;
@@ -81,7 +80,8 @@ async fn main() -> std::io::Result<()> {
     let ddg: Box<dyn SearchEngine + Send + Sync> = Box::new(DuckDuckGo::new());
     let brave: Box<dyn SearchEngine + Send + Sync> = Box::new(BraveSearchEngine::new(&config));
     let wiki: Box<dyn SearchEngine + Send + Sync> = Box::new(WikipediaClient::new());
-    let aggregator = web::Data::new(Aggregator::new(vec![ddg, brave, wiki]));
+    let arxiv: Box<dyn SearchEngine + Send + Sync> = Box::new(ArxivClient::new());
+    let aggregator = web::Data::new(Aggregator::new(vec![arxiv]));
 
     let secret_key = actix_web::cookie::Key::generate();
 
