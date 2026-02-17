@@ -92,7 +92,7 @@ impl SearchEngine for WikipediaClient {
             url: data.content_urls.desktop.page,
             snippet: data.extract,
             source: "Wikipedia".to_string(),
-            score: 10.0,
+            score: 100.0,
         }])
     }
 }

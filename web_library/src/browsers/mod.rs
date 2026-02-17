@@ -13,10 +13,12 @@ pub mod arxiv;
 pub mod brave_engine;
 pub mod duckduckgo_engine;
 pub mod search_engine;
+pub mod semantic_scholar;
 pub mod wikipedia;
 
 pub use arxiv::ArxivClient;
 pub use brave_engine::BraveSearchEngine;
 pub use duckduckgo_engine::DuckDuckGo;
 pub use search_engine::SearchEngine;
+pub use semantic_scholar::ScholarClient;
 pub use wikipedia::WikipediaClient;

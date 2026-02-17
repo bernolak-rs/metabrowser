@@ -13,7 +13,8 @@ struct Arxiv {
 #[derive(Debug, Deserialize)]
 struct ArxivEntry {
     title: String,
-    summary: String,
+    #[serde(rename = "summary")]
+    description: String,
     id: String,
 }
 
@@ -57,7 +58,7 @@ impl SearchEngine for ArxivClient {
             .map(|entry| SearchResult {
                 title: entry.title.replace('\n', " ").trim().to_string(),
                 url: entry.id,
-                snippet: entry.summary.chars().take(200).collect::<String>() + "...",
+                snippet: entry.description.chars().take(200).collect::<String>() + "...",
                 source: "ArXiv".to_string(),
                 score: 0.9,
             })

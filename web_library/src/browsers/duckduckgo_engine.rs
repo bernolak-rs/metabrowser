@@ -83,7 +83,7 @@ impl SearchEngine for DuckDuckGo {
                 snippet: text,
                 url,
                 source: self.name().into(),
-                score: 2.0,
+                score: 0.4,
             });
         }
 
@@ -122,7 +122,7 @@ impl DuckDuckGo {
                         snippet: text,
                         url: first_url,
                         source: "DuckDuckGo".into(),
-                        score: 1.0,
+                        score: 0.3,
                     });
                 }
                 RelatedTopic::Category { topics } => {
