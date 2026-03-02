@@ -1,0 +1,34 @@
+body, html { 
+    height: 100%; 
+}
+
+.rounded-pill {
+    border-radius: 50px !important;
+}
+
+.hero-section { 
+    height: 80vh; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    flex-direction: column; 
+}
+
+
+.input-group.shadow-lg {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+    transition: box-shadow 0.3s ease;
+}
+
+.input-group.shadow-lg:focus-within {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12) !important;
+}
+
+#searchInput:focus {
+    box-shadow: none;
+}
+
+h1.display-3 {
+    letter-spacing: -1px;
+    color: #212529;
+}

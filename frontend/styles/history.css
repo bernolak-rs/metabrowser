@@ -1,0 +1,41 @@
+body {
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    letter-spacing: -1px;
+}
+
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.list-group-item {
+    transition: background-color 0.2s ease;
+    border-left: 4px solid transparent;
+}
+
+.list-group-item:hover {
+    background-color: #f1f4ff;
+    border-left: 4px solid #0d6efd;
+}
+
+.list-group-item a {
+    font-size: 1.1rem;
+    color: #212529;
+}
+
+.list-group-item small {
+    color: #6c757d;
+}
+
+.badge {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.list-group-item:hover .badge {
+    opacity: 1;
+}

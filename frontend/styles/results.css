@@ -1,0 +1,45 @@
+body {
+    font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+.wiki-hero-container {
+    margin-top: 1rem;
+    border-top: 6px solid #0d6efd !important;
+    background: linear-gradient(180deg, #ffffff 0%, #f9faff 100%);
+    transition: all 0.3s ease;
+}
+
+.wiki-icon {
+    background: #000;
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.tracking-widest {
+    letter-spacing: 0.15em;
+}
+
+.lead {
+    font-size: 1.25rem;
+    font-weight: 400;
+}
+
+.result-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.result-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08) !important;
+}
+
+.navbar {
+    z-index: 1030;
+}
