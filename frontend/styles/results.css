@@ -9,23 +9,6 @@ body {
     transition: all 0.3s ease;
 }
 
-.wiki-icon {
-    background: #000;
-    color: #fff;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    border-radius: 6px;
-    font-size: 0.9rem;
-}
-
-.tracking-widest {
-    letter-spacing: 0.15em;
-}
-
 .lead {
     font-size: 1.25rem;
     font-weight: 400;

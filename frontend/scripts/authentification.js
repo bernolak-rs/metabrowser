@@ -1,4 +1,4 @@
-const getElement = (id) => document.getElementById(id);
+import { getElement } from './common.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     initAuthForm();

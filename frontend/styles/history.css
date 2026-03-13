@@ -30,12 +30,3 @@ body {
 .list-group-item small {
     color: #6c757d;
 }
-
-.badge {
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-.list-group-item:hover .badge {
-    opacity: 1;
-}
