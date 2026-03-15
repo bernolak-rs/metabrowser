@@ -8,12 +8,10 @@ async function fetchHistory() {
     const list = getElement('historyList');
     if (!list) return;
 
-    console.log('Fetching history...');
     try {
         const response = await fetch('/history');
         if (response.ok) {
             const data = await response.json();
-            console.log('History data:', data);
             list.innerHTML = data.map(h => `
                 <li class="list-group-item">
                     <a href="results.html?q=${encodeURIComponent(h.query_text)}" onclick="console.log('History item clicked:', '${h.query_text}')" class="text-decoration-none d-flex justify-content-between align-items-center py-3">

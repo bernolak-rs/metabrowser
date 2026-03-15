@@ -23,6 +23,7 @@ function initAuthForm() {
     }
 
     authForm.addEventListener('submit', async (e) => {
+        console.log("Hello");
         e.preventDefault();
         const usernameEl = getElement('username');
         const passwordEl = getElement('password');

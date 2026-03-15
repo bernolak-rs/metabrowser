@@ -67,6 +67,9 @@ export function renderResults(results) {
 }
 
 export async function updateAuthUI() {
+    console.log("Update auth called")
+
+
     const userNav = getElement('userNav');
     if (!userNav) return;
 
@@ -81,11 +84,20 @@ export async function updateAuthUI() {
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                         <li><a class="dropdown-item" href="history.html">Search History</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><button class="dropdown-item text-danger" onclick="logout()">Logout</button></li>
+                        <li><button class="dropdown-item text-danger">Logout</button></li>
                     </ul>
                 </div>`;
+            const logoutBtn = userNav.querySelector('.text-danger');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
+                });
+            }
         }
-    } catch (e) { }
+    } catch (e) { 
+        console.error("Auth UI update failed", e);
+    }
 }
 
 export async function logout() {
